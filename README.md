@@ -1,9 +1,11 @@
 # FastAPI Example App
 
-1. python -m venv venv
-2. pip install -r requirements.txt
-3. cd fastapi-application
-4. python main.py
+1. Создайте виртуальное окружение:
+   ```bash
+   python -m venv venv
+   pip install -r requirements.txt
+   cd fastapi-application
+   python main.py
 
 Resources:
 
