@@ -3,7 +3,11 @@
 1. Создайте виртуальное окружение:
    ```bash
    python -m venv venv
+2. Установите зависимости
+   ```bash
    pip install -r requirements.txt
+3. Запустите приложение
+   ```bash
    cd fastapi-application
    python main.py
 
