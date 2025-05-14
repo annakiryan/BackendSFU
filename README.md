@@ -6,6 +6,7 @@
 2. Установите зависимости
    ```bash
    pip install -r requirements.txt
+3. Настройте .env
 3. Запустите приложение
    ```bash
    cd fastapi-application
