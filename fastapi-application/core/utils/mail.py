@@ -1,6 +1,8 @@
 import aiosmtplib
+import asyncio
+from datetime import datetime
 from email.message import EmailMessage
-import os
+import logging
 from dotenv import load_dotenv
 from core.config import settings
 
@@ -28,3 +30,15 @@ async def send_email_to_customer(email: str, subject: str, message: str) -> None
         username=SMTP_USERNAME,
         password=SMTP_PASSWORD,
     )
+
+
+logger = logging.getLogger(__name__)
+
+
+def send_email_wrapper(email: str, subject: str, message: str) -> None:
+    try:
+        asyncio.run(send_email_to_customer(email, subject, message))
+    except Exception as e:
+        logger.error(
+            f"{datetime.now()} Не удалось отправить письмо клиенту {email}: {e}"
+        )

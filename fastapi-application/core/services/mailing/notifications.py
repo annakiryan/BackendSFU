@@ -1,21 +1,17 @@
-from core.utils.mail import send_email_to_customer
+from core.utils.mail import send_email_wrapper
 from core.models.order import Order
 import logging
-from datetime import datetime
+from fastapi import BackgroundTasks
 
 logger = logging.getLogger(__name__)
 
 
-async def notify_customer_if_needed(order: Order) -> None:
+def notify_customer_if_needed(order: Order, background_tasks: BackgroundTasks) -> None:
     customer = order.customer_car.customer
     if customer.is_send_notify:
-        try:
-            await send_email_to_customer(
-                email=customer.email,
-                subject="Ваш заказ выполнен",
-                message=f"Здравствуйте! Ваш заказ №{order.id} был успешно выполнен.",
-            )
-        except Exception as e:
-            logger.error(
-                f"{datetime.now()} Не удалось отправить письмо клиенту {customer.email}: {e}"
-            )
+        background_tasks.add_task(
+            send_email_wrapper,
+            customer.email,
+            "Ваш заказ выполнен",
+            f"Здравствуйте! Ваш заказ №{order.id} был успешно выполнен.",
+        )

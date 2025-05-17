@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.filters.order import OrderFilter
 from datetime import timedelta
 from fastapi_pagination import Page
+from fastapi import BackgroundTasks
 from core.services.mailing.notifications import notify_customer_if_needed
 from core.exceptions import (
     OrderNotFound,
@@ -93,7 +94,9 @@ class OrderService:
         order = await self.get_order_from_db(db, order_id)
         await order_crud.delete(db, order)
 
-    async def update_status(self, db: AsyncSession, order_id: int) -> Order:
+    async def update_status(
+        self, db: AsyncSession, order_id: int, background_tasks: BackgroundTasks
+    ) -> Order:
         order = await self.get_order_from_db(db, order_id)
         if order.status == OrderStatus.COMPLETED:
             raise OrderCompleted()
@@ -102,7 +105,7 @@ class OrderService:
         order.end_date = datetime.now()
         updated_order = await order_crud.update_status(db, order)
 
-        await notify_customer_if_needed(order)
+        notify_customer_if_needed(order, background_tasks)
         return await self.build_order_read(updated_order)
 
     async def get_order_from_db(self, db: AsyncSession, order_id: int) -> Order:

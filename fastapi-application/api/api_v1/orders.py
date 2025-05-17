@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 from core.config import settings
@@ -140,9 +140,10 @@ async def update_order(
 )
 async def complete_order(
     order_id: int,
+    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(db_helper.session_getter),
 ):
-    return await order_service.update_status(db, order_id)
+    return await order_service.update_status(db, order_id, background_tasks)
 
 
 @router.delete(
