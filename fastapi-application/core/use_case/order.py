@@ -9,7 +9,7 @@ from core.filters.order import OrderFilter
 from datetime import timedelta
 from fastapi_pagination import Page
 from fastapi import BackgroundTasks
-from core.services.mailing.notifications import notify_customer_if_needed
+from core.services.mailing.notifications import notify_customer
 from core.exceptions import (
     OrderNotFound,
     OrderCompleted,
@@ -105,7 +105,8 @@ class OrderService:
         order.end_date = datetime.now()
         updated_order = await order_crud.update_status(db, order)
 
-        notify_customer_if_needed(order, background_tasks)
+        if order.customer_car.customer.is_send_notify:
+            notify_customer(order, background_tasks)
         return await self.build_order_read(updated_order)
 
     async def get_order_from_db(self, db: AsyncSession, order_id: int) -> Order:
